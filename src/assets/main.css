@@ -20,6 +20,7 @@ Use a better box model (opinionated).
 2. Correct the line height in all browsers.
 3. Prevent adjustments of font size after orientation changes in iOS.
 4. Use a more readable tab size (opinionated).
+5. Set dark theme as default
 */
 
 html {
@@ -29,6 +30,9 @@ html {
   line-height: 1.15; /* 2 */
   -webkit-text-size-adjust: 100%; /* 3 */
   tab-size: 4; /* 4 */
+  background-color: #1a1a1a; /* 5 */
+  color: #ffffff; /* 5 */
+  color-scheme: dark; /* 5 */
 }
 
 /*
@@ -37,11 +41,34 @@ Sections
 */
 
 /**
-Remove the margin in all browsers.
+Remove the margin in all browsers and set dark theme.
 */
 
 body {
   margin: 0;
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+/* Dark theme styling */
+#app {
+  background-color: #1a1a1a;
+  color: #ffffff;
+  min-height: 100vh;
+}
+
+/* Ensure all text elements inherit the light color */
+h1, h2, h3, h4, h5, h6, p, span, div {
+  color: inherit;
+}
+
+/* Style for links in dark theme */
+a {
+  color: #60a5fa;
+}
+
+a:hover {
+  color: #93c5fd;
 }
 
 /*

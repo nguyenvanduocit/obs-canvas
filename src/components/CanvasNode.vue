@@ -225,10 +225,16 @@ function handleWheel(event: WheelEvent) {
   margin-top: 0;
 }
 
+.text-content :deep(hr) {
+  opacity: 0.3;
+}
+
 .text-content :deep(p:last-child) {
   margin-bottom: 0;
 }
+
 .text-content :deep(h1) {
+  color: #dadada;
   box-sizing: border-box;
   color-scheme: dark;
   cursor: default;
@@ -262,15 +268,8 @@ function handleWheel(event: WheelEvent) {
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 }
 
-.text-content :deep(h1:first-child) {
-  margin-top: 0;
-}
-
-.text-content :deep(a) {
-  color: #ffffff;
-  text-decoration: underline;
-}
 .text-content :deep(h2) {
+  color: #dadada;
   box-sizing: border-box;
   color-scheme: dark;
   cursor: default;
@@ -303,6 +302,7 @@ function handleWheel(event: WheelEvent) {
 }
 
 .text-content :deep(h3) {
+  color: #dadada;
   box-sizing: border-box;
   color-scheme: dark;
   cursor: default;
@@ -335,6 +335,7 @@ function handleWheel(event: WheelEvent) {
 }
 
 .text-content :deep(h4) {
+  color: #ea5b67;
   box-sizing: border-box;
   color-scheme: dark;
   cursor: default;
@@ -366,12 +367,59 @@ function handleWheel(event: WheelEvent) {
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 }
 
+.text-content :deep(strong) {
+  color: #f66161;
+}
+
+.text-content :deep(em) {
+  color: #f82b2b;
+}
+
+.text-content :deep(h1:first-child) {
+  margin-top: 0;
+}
+
+.text-content :deep(a) {
+  color: #26e0f2;
+  text-decoration: underline;
+}
+
+.text-content :deep(blockquote) {
+  color: #26e0f2;
+  border-left: 4px solid #26e0f2;
+  padding-left: 16px;
+  margin: 16px 0;
+  font-style: italic;
+}
+
+.text-content :deep(h5) {
+  color: #26e0f2;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 12px 0;
+}
+
+.text-content :deep(h6) {
+  color: #888;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 10px 0;
+}
+
+.text-content :deep(mark) {
+  background-color: #26e0f2;
+  color: #000;
+  padding: 2px 4px;
+  border-radius: 2px;
+}
+
 .text-content :deep(li) {
   margin-top: 0;
   margin-bottom: 0;
   padding-top: 0;
   padding-bottom: 0;
 }
+
 .file-content {
   display: flex;
   flex-direction: column;
@@ -392,24 +440,25 @@ function handleWheel(event: WheelEvent) {
 .handle {
   opacity: 0;
 }
+
 /* Connection handles */
 .handle-top {
   width: 12px;
-    height: 12px;
-    top: -9px;
+  height: 12px;
+  top: -9px;
   left: 50%;
   border-color: #ffffff;
-    border-width: 2px;
+  border-width: 2px;
   transform: translateX(-50%);
 }
 
 .handle-bottom {
   width: 12px;
-    height: 12px;
-    bottom: -9px;
+  height: 12px;
+  bottom: -9px;
   left: 50%;
   border-color: #ffffff;
-    border-width: 2px;
+  border-width: 2px;
   transform: translateX(-50%);
 }
 
@@ -419,7 +468,7 @@ function handleWheel(event: WheelEvent) {
     left: -9px;
   top: 50%;
   border-color: #ffffff;
-    border-width: 2px;
+  border-width: 2px;
   transform: translateY(-50%);
 }
 
@@ -429,7 +478,7 @@ function handleWheel(event: WheelEvent) {
     right: -9px;
   top: 50%;
   border-color: #ffffff;
-    border-width: 2px;
+  border-width: 2px;
   transform: translateY(-50%);
 }
 

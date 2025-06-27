@@ -128,7 +128,7 @@ onMounted(() => {
     <!-- VueFlow canvas -->
     <VueFlow v-else class="vue-flow" :nodes="nodes" :edges="edges" :node-types="nodeTypes" :min-zoom="0.1" :max-zoom="2"
       fit-view-on-init>
-      <Background :size="4" :gap="35" pattern-color="#313131" />
+      <Background :size="4" :gap="35" pattern-color="#ffffff17" />
     </VueFlow>
   </div>
 </template>
@@ -155,17 +155,20 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.9);
-  z-index: 1000;
+  background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
 }
 
 .loading-content,
 .error-content {
   text-align: center;
   padding: 2rem;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: #1a1a1a;
+  color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   max-width: 500px;
 }
 
@@ -190,24 +193,25 @@ onMounted(() => {
 }
 
 .error-content h3 {
-  color: #e74c3c;
+  color: #ff6b6b;
   margin: 0 0 1rem 0;
 }
 
 .error-content p {
-  color: #666;
+  color: #cccccc;
   margin: 0 0 1rem 0;
 }
 
 .gist-info {
   font-size: 12px;
-  color: #888;
+  color: #888888;
   font-family: monospace;
   margin: 0.5rem 0;
 }
 
 .url-help {
-  background: #f8f9fa;
+  background: #2a2a2a;
+  border: 1px solid #3a3a3a;
   padding: 1rem;
   border-radius: 4px;
   margin: 1rem 0;
@@ -217,32 +221,32 @@ onMounted(() => {
 .url-help p {
   margin: 0.5rem 0;
   font-size: 14px;
+  color: #cccccc;
 }
+  .url-help code {
+    background: #3a3a3a;
+    color: #ffffff;
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 12px;
+    display: block;
+    margin: 0.25rem 0;
+    word-break: break-all;
+  }
 
-.url-help code {
-  background: #e9ecef;
-  padding: 0.25rem 0.5rem;
-  border-radius: 3px;
-  font-family: monospace;
-  font-size: 12px;
-  display: block;
-  margin: 0.25rem 0;
-  word-break: break-all;
-}
+  .retry-button {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 1rem;
+  }
 
-.retry-button {
-  background: #3498db;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  margin-top: 1rem;
-}
-
-.retry-button:hover {
-  background: #2980b9;
-}
-
+  .retry-button:hover {
+    background: #2980b9;
+  }
 </style>

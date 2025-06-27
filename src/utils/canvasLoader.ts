@@ -119,55 +119,114 @@ export async function loadCanvasFile(filePath: string): Promise<CanvasData> {
 }
 
 /**
- * Darkens a color by mixing it with black
+ * Darkens a color by mixing it with black, shifts hue to the left, and adds opacity
  * @param color - Color in hex format (e.g., '#ff0000') or rgb format
- * @param percentage - Percentage of black to mix (0-100)
- * @returns Darkened color in rgb format
+ * @param darkenPercentage - Percentage of darkening to apply (0-100)
+ * @param hueShiftDegrees - Degrees to shift hue to the left (0-360)
+ * @param opacity - Opacity value (0-1)
+ * @returns Darkened color with hue shift and opacity in rgba format
  */
-function darkenColor(color: string, percentage: number = 20): string {
+function darkenColor(
+  color: string,
+  darkenPercentage: number = 20,
+  hueShiftDegrees: number = 30,
+  opacity: number = 0.1,
+): string {
   // Default color if none provided
   if (!color) {
-    return 'rgb(200, 200, 200)' // Medium gray
+    return `rgba(200, 200, 200, ${opacity})` // Medium gray with custom opacity
   }
+
+  let r: number, g: number, b: number
 
   // Handle hex colors
   if (color.startsWith('#')) {
     const hex = color.slice(1)
-    const r = parseInt(hex.slice(0, 2), 16)
-    const g = parseInt(hex.slice(2, 4), 16)
-    const b = parseInt(hex.slice(4, 6), 16)
-    
-    // Mix with black
-    const factor = percentage / 100
-    const newR = Math.round(r * (1 - factor))
-    const newG = Math.round(g * (1 - factor))
-    const newB = Math.round(b * (1 - factor))
-    
-    return `rgb(${newR}, ${newG}, ${newB})`
+    r = parseInt(hex.slice(0, 2), 16)
+    g = parseInt(hex.slice(2, 4), 16)
+    b = parseInt(hex.slice(4, 6), 16)
   }
-
   // Handle rgb colors
-  if (color.startsWith('rgb')) {
+  else if (color.startsWith('rgb')) {
     const matches = color.match(/\d+/g)
     if (matches && matches.length >= 3) {
-      const r = parseInt(matches[0])
-      const g = parseInt(matches[1])
-      const b = parseInt(matches[2])
-      
-      // Mix with black
-      const factor = percentage / 100
-      const newR = Math.round(r * (1 - factor))
-      const newG = Math.round(g * (1 - factor))
-      const newB = Math.round(b * (1 - factor))
-      
-      return `rgb(${newR}, ${newG}, ${newB})`
+      r = parseInt(matches[0])
+      g = parseInt(matches[1])
+      b = parseInt(matches[2])
+    } else {
+      return `rgba(200, 200, 200, ${opacity})`
     }
   }
-
   // Fallback for unknown formats
-  return 'rgb(200, 200, 200)'
-}
+  else {
+    return `rgba(200, 200, 200, ${opacity})`
+  }
 
+  // Convert RGB to HSL for hue manipulation
+  const rNorm = r / 255
+  const gNorm = g / 255
+  const bNorm = b / 255
+
+  const max = Math.max(rNorm, gNorm, bNorm)
+  const min = Math.min(rNorm, gNorm, bNorm)
+  const diff = max - min
+
+  let h = 0
+  let s = 0
+  const l = (max + min) / 2
+
+  if (diff !== 0) {
+    s = l > 0.5 ? diff / (2 - max - min) : diff / (max + min)
+
+    switch (max) {
+      case rNorm:
+        h = (gNorm - bNorm) / diff + (gNorm < bNorm ? 6 : 0)
+        break
+      case gNorm:
+        h = (bNorm - rNorm) / diff + 2
+        break
+      case bNorm:
+        h = (rNorm - gNorm) / diff + 4
+        break
+    }
+    h /= 6
+  }
+
+  // Shift hue to the left (subtract from hue) and darken
+  const hueShift = hueShiftDegrees / 360 // Convert degrees to normalized value (0-1)
+  const newH = (h - hueShift + 1) % 1 // Ensure hue stays in [0, 1] range
+  const darkenFactor = darkenPercentage / 100
+  const newL = Math.max(0, l * (1 - darkenFactor)) // Darken by reducing lightness
+
+  // Convert HSL back to RGB
+  const hue2rgb = (p: number, q: number, t: number): number => {
+    if (t < 0) t += 1
+    if (t > 1) t -= 1
+    if (t < 1 / 6) return p + (q - p) * 6 * t
+    if (t < 1 / 2) return q
+    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6
+    return p
+  }
+
+  let newR: number, newG: number, newB: number
+
+  if (s === 0) {
+    newR = newG = newB = newL // achromatic
+  } else {
+    const q = newL < 0.5 ? newL * (1 + s) : newL + s - newL * s
+    const p = 2 * newL - q
+    newR = hue2rgb(p, q, newH + 1 / 3)
+    newG = hue2rgb(p, q, newH)
+    newB = hue2rgb(p, q, newH - 1 / 3)
+  }
+
+  // Convert back to 0-255 range and add opacity
+  const finalR = Math.round(newR * 255)
+  const finalG = Math.round(newG * 255)
+  const finalB = Math.round(newB * 255)
+
+  return `rgba(${finalR}, ${finalG}, ${finalB}, ${opacity})`
+}
 
 /**
  * Converts canvas nodes to VueFlow nodes
@@ -180,8 +239,10 @@ export function convertNodesToVueFlow(canvasNodes: CanvasNode[]): Node[] {
 
   return filteredNodes.map((node) => {
     const originalBackgroundColor = node.color || '#1c2127'
-    const backgroundColor = node.color ? darkenColor(originalBackgroundColor, 70) : '#1c2127'
-    const borderColor = node.color ? darkenColor(originalBackgroundColor, 30) : '#a1a1a1'
+    const backgroundColor = node.color
+      ? darkenColor(originalBackgroundColor,70, 10, 0.3)
+      : '#1c2127'
+    const borderColor = darkenColor(originalBackgroundColor, 10, 10, 1)
 
     return {
       id: node.id,
@@ -219,8 +280,8 @@ export function convertEdgesToVueFlow(canvasEdges: CanvasEdge[]): Edge[] {
     sourceHandle: edge.fromSide,
     targetHandle: edge.toSide,
     style: {
-      stroke: darkenColor(edge.color || '#b1b1b7', 50),
-      strokeWidth: 10,
+      stroke: edge.color,
+      strokeWidth: 8,
     },
     type: 'default',
   }))
