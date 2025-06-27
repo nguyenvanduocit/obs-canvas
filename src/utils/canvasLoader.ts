@@ -119,6 +119,57 @@ export async function loadCanvasFile(filePath: string): Promise<CanvasData> {
 }
 
 /**
+ * Darkens a color by mixing it with black
+ * @param color - Color in hex format (e.g., '#ff0000') or rgb format
+ * @param percentage - Percentage of black to mix (0-100)
+ * @returns Darkened color in rgb format
+ */
+function darkenColor(color: string, percentage: number = 20): string {
+  // Default color if none provided
+  if (!color) {
+    return 'rgb(200, 200, 200)' // Medium gray
+  }
+
+  // Handle hex colors
+  if (color.startsWith('#')) {
+    const hex = color.slice(1)
+    const r = parseInt(hex.slice(0, 2), 16)
+    const g = parseInt(hex.slice(2, 4), 16)
+    const b = parseInt(hex.slice(4, 6), 16)
+    
+    // Mix with black
+    const factor = percentage / 100
+    const newR = Math.round(r * (1 - factor))
+    const newG = Math.round(g * (1 - factor))
+    const newB = Math.round(b * (1 - factor))
+    
+    return `rgb(${newR}, ${newG}, ${newB})`
+  }
+
+  // Handle rgb colors
+  if (color.startsWith('rgb')) {
+    const matches = color.match(/\d+/g)
+    if (matches && matches.length >= 3) {
+      const r = parseInt(matches[0])
+      const g = parseInt(matches[1])
+      const b = parseInt(matches[2])
+      
+      // Mix with black
+      const factor = percentage / 100
+      const newR = Math.round(r * (1 - factor))
+      const newG = Math.round(g * (1 - factor))
+      const newB = Math.round(b * (1 - factor))
+      
+      return `rgb(${newR}, ${newG}, ${newB})`
+    }
+  }
+
+  // Fallback for unknown formats
+  return 'rgb(200, 200, 200)'
+}
+
+
+/**
  * Converts canvas nodes to VueFlow nodes
  * @param canvasNodes - Array of canvas nodes
  * @returns Array of VueFlow nodes
@@ -127,31 +178,32 @@ export function convertNodesToVueFlow(canvasNodes: CanvasNode[]): Node[] {
   // only keep type 'text' and 'file'
   const filteredNodes = canvasNodes.filter((node) => node.type === 'text' || node.type === 'file')
 
-  return filteredNodes.map((node) => ({
-    id: node.id,
-    type: getVueFlowNodeType(node.type),
-    position: { x: node.x, y: node.y },
-    dimensions: {
-      width: node.width,
-      height: node.height,
-    },
-    data: {
-      label: getNodeLabel(node),
-      content: node.text || node.file || '',
-      originalType: node.type,
-      width: node.width,
-      height: node.height,
-      color: node.color,
-    },
-    style: {
-      width: `${node.width}px`,
-      height: `${node.height}px`,
-      backgroundColor: node.color || 'rgb(242 242 242)',
-      border: '1px solid #ddd',
-      borderRadius: '8px',
-      fontSize: '14px',
-    },
-  }))
+  return filteredNodes.map((node) => {
+    const originalBackgroundColor = node.color || '#1c2127'
+    const backgroundColor = node.color ? darkenColor(originalBackgroundColor, 70) : '#1c2127'
+    const borderColor = node.color ? darkenColor(originalBackgroundColor, 30) : '#a1a1a1'
+
+    return {
+      id: node.id,
+      type: getVueFlowNodeType(node.type),
+      position: { x: node.x, y: node.y },
+
+      data: {
+        label: getNodeLabel(node),
+        content: node.text || node.file || '',
+        originalType: node.type,
+        width: node.width,
+        height: node.height,
+        color: node.color,
+      },
+      style: {
+        backgroundColor: backgroundColor,
+        border: `4px solid ${borderColor}`,
+        borderRadius: '8px',
+        fontSize: '14px',
+      },
+    }
+  })
 }
 
 /**
@@ -167,8 +219,8 @@ export function convertEdgesToVueFlow(canvasEdges: CanvasEdge[]): Edge[] {
     sourceHandle: edge.fromSide,
     targetHandle: edge.toSide,
     style: {
-      stroke: edge.color || '#b1b1b7',
-      strokeWidth: 2,
+      stroke: darkenColor(edge.color || '#b1b1b7', 50),
+      strokeWidth: 10,
     },
     type: 'default',
   }))

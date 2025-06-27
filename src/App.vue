@@ -128,7 +128,7 @@ onMounted(() => {
     <!-- VueFlow canvas -->
     <VueFlow v-else class="vue-flow" :nodes="nodes" :edges="edges" :node-types="nodeTypes" :min-zoom="0.1" :max-zoom="2"
       fit-view-on-init>
-      <Background :size="4" :gap="35" />
+      <Background :size="4" :gap="35" pattern-color="#313131" />
     </VueFlow>
   </div>
 </template>

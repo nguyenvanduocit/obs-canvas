@@ -1,5 +1,6 @@
 <template>
-  <div class="canvas-node" @mouseenter="onNodeEnter" @mouseleave="onNodeLeave">
+  <div class="canvas-node" @mouseenter="onNodeEnter" @mouseleave="onNodeLeave"
+    :style="{ width: data.width + 'px', height: data.height + 'px' }">
     <div class="node-header" v-if="data.originalType === 'file'">
       <svg class="file-icon" viewBox="0 0 24 24" width="16" height="16">
         <path fill="currentColor"
@@ -17,10 +18,10 @@
     </div>
   </div>
   <!-- Connection handles -->
-  <Handle id="top" type="target" :position="Position.Top" class="handle-top" />
-  <Handle id="bottom" type="source" :position="Position.Bottom" class="handle-bottom" />
-  <Handle id="left" type="target" :position="Position.Left" class="handle-left" />
-  <Handle id="right" type="source" :position="Position.Right" class="handle-right" />
+  <Handle id="top" type="target" :position="Position.Top" class="handle-top handle" />
+  <Handle id="bottom" type="source" :position="Position.Bottom" class="handle-bottom handle" />
+  <Handle id="left" type="target" :position="Position.Left" class="handle-left handle" />
+  <Handle id="right" type="source" :position="Position.Right" class="handle-right handle" />
 </template>
 
 <script setup lang="ts">
@@ -125,6 +126,7 @@ function handleWheel(event: WheelEvent) {
 
 <style scoped>
 .canvas-node {
+  padding: 20px 0;
   overflow: hidden;
   position: relative;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -162,7 +164,7 @@ function handleWheel(event: WheelEvent) {
 }
 
 .node-content {
-  padding: 12px;
+  padding: 0 20px;
   height: 100%;
   overflow: auto;
   font-size: 13px;
@@ -202,7 +204,7 @@ function handleWheel(event: WheelEvent) {
 }
 
 .text-content {
-  color: #333;
+  color: #dadada;
   box-sizing: border-box;
   cursor: default;
   display: block;
@@ -210,10 +212,6 @@ function handleWheel(event: WheelEvent) {
   font-size: 18px;
   font-style: normal;
   line-height: 27px;
-  margin-block-end: 18px;
-  margin-block-start: 0px;
-  margin-inline-end: 0px;
-  margin-inline-start: 0px;
   margin-top: 0px;
   overflow-wrap: break-word;
   pointer-events: auto;
@@ -221,9 +219,15 @@ function handleWheel(event: WheelEvent) {
   text-rendering: optimizelegibility;
   unicode-bidi: plaintext;
   user-select: text;
-  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+}
+  
+.text-content :deep(p) {
+  margin-top: 0;
 }
 
+.text-content :deep(p:last-child) {
+  margin-bottom: 0;
+}
 .text-content :deep(h1) {
   box-sizing: border-box;
   color-scheme: dark;
@@ -258,6 +262,14 @@ function handleWheel(event: WheelEvent) {
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 }
 
+.text-content :deep(h1:first-child) {
+  margin-top: 0;
+}
+
+.text-content :deep(a) {
+  color: #ffffff;
+  text-decoration: underline;
+}
 .text-content :deep(h2) {
   box-sizing: border-box;
   color-scheme: dark;
@@ -354,6 +366,12 @@ function handleWheel(event: WheelEvent) {
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 }
 
+.text-content :deep(li) {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
 .file-content {
   display: flex;
   flex-direction: column;
@@ -371,28 +389,47 @@ function handleWheel(event: WheelEvent) {
   word-break: break-all;
 }
 
+.handle {
+  opacity: 0;
+}
 /* Connection handles */
 .handle-top {
-  top: -4px;
+  width: 12px;
+    height: 12px;
+    top: -9px;
   left: 50%;
+  border-color: #ffffff;
+    border-width: 2px;
   transform: translateX(-50%);
 }
 
 .handle-bottom {
-  bottom: -4px;
+  width: 12px;
+    height: 12px;
+    bottom: -9px;
   left: 50%;
+  border-color: #ffffff;
+    border-width: 2px;
   transform: translateX(-50%);
 }
 
 .handle-left {
-  left: -4px;
+  width: 12px;
+    height: 12px;
+    left: -9px;
   top: 50%;
+  border-color: #ffffff;
+    border-width: 2px;
   transform: translateY(-50%);
 }
 
 .handle-right {
-  right: -4px;
+  width: 12px;
+    height: 12px;
+    right: -9px;
   top: 50%;
+  border-color: #ffffff;
+    border-width: 2px;
   transform: translateY(-50%);
 }
 
