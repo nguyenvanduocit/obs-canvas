@@ -124,7 +124,10 @@ export async function loadCanvasFile(filePath: string): Promise<CanvasData> {
  * @returns Array of VueFlow nodes
  */
 export function convertNodesToVueFlow(canvasNodes: CanvasNode[]): Node[] {
-  return canvasNodes.map((node) => ({
+  // only keep type 'text' and 'file'
+  const filteredNodes = canvasNodes.filter((node) => node.type === 'text' || node.type === 'file')
+
+  return filteredNodes.map((node) => ({
     id: node.id,
     type: getVueFlowNodeType(node.type),
     position: { x: node.x, y: node.y },
