@@ -119,22 +119,20 @@ export async function loadCanvasFile(filePath: string): Promise<CanvasData> {
 }
 
 /**
- * Darkens a color by mixing it with black, shifts hue to the left, and adds opacity
+ * Darkens a color by mixing it with black and shifts hue to the left
  * @param color - Color in hex format (e.g., '#ff0000') or rgb format
  * @param darkenPercentage - Percentage of darkening to apply (0-100)
  * @param hueShiftDegrees - Degrees to shift hue to the left (0-360)
- * @param opacity - Opacity value (0-1)
- * @returns Darkened color with hue shift and opacity in rgba format
+ * @returns Darkened color with hue shift in rgb format
  */
 function darkenColor(
   color: string,
   darkenPercentage: number = 20,
   hueShiftDegrees: number = 30,
-  opacity: number = 0.1,
 ): string {
   // Default color if none provided
   if (!color) {
-    return `rgba(200, 200, 200, ${opacity})` // Medium gray with custom opacity
+    return 'rgb(200, 200, 200)' // Medium gray
   }
 
   let r: number, g: number, b: number
@@ -154,12 +152,12 @@ function darkenColor(
       g = parseInt(matches[1])
       b = parseInt(matches[2])
     } else {
-      return `rgba(200, 200, 200, ${opacity})`
+      return 'rgb(200, 200, 200)'
     }
   }
   // Fallback for unknown formats
   else {
-    return `rgba(200, 200, 200, ${opacity})`
+    return 'rgb(200, 200, 200)'
   }
 
   // Convert RGB to HSL for hue manipulation
@@ -220,51 +218,12 @@ function darkenColor(
     newB = hue2rgb(p, q, newH - 1 / 3)
   }
 
-  // Convert back to 0-255 range and add opacity
+  // Convert back to 0-255 range
   const finalR = Math.round(newR * 255)
   const finalG = Math.round(newG * 255)
   const finalB = Math.round(newB * 255)
 
-  return `rgba(${finalR}, ${finalG}, ${finalB}, ${opacity})`
-}
-
-/**
- * Converts canvas nodes to VueFlow nodes
- * @param canvasNodes - Array of canvas nodes
- * @returns Array of VueFlow nodes
- */
-export function convertNodesToVueFlow(canvasNodes: CanvasNode[]): Node[] {
-  // only keep type 'text' and 'file'
-  const filteredNodes = canvasNodes.filter((node) => node.type === 'text' || node.type === 'file')
-
-  return filteredNodes.map((node) => {
-    const originalBackgroundColor = node.color || '#1c2127'
-    const backgroundColor = node.color
-      ? darkenColor(originalBackgroundColor,70, 10, 0.3)
-      : '#1c2127'
-    const borderColor = darkenColor(originalBackgroundColor, 10, 10, 1)
-
-    return {
-      id: node.id,
-      type: getVueFlowNodeType(node.type),
-      position: { x: node.x, y: node.y },
-
-      data: {
-        label: getNodeLabel(node),
-        content: node.text || node.file || '',
-        originalType: node.type,
-        width: node.width,
-        height: node.height,
-        color: node.color,
-      },
-      style: {
-        backgroundColor: backgroundColor,
-        border: `4px solid ${borderColor}`,
-        borderRadius: '8px',
-        fontSize: '14px',
-      },
-    }
-  })
+  return `rgb(${finalR}, ${finalG}, ${finalB})`
 }
 
 /**
@@ -321,6 +280,45 @@ function getNodeLabel(node: CanvasNode): string {
   }
 
   return `${node.type} node`
+}
+
+/**
+ * Converts canvas nodes to VueFlow nodes
+ * @param canvasNodes - Array of canvas nodes
+ * @returns Array of VueFlow nodes
+ */
+export function convertNodesToVueFlow(canvasNodes: CanvasNode[]): Node[] {
+  // only keep type 'text' and 'file'
+  const filteredNodes = canvasNodes.filter((node) => node.type === 'text' || node.type === 'file')
+
+  return filteredNodes.map((node) => {
+    const originalBackgroundColor = node.color || '#1c2127'
+    const backgroundColor = node.color
+      ? darkenColor(originalBackgroundColor, 80, 5)
+      : '#1c2127'
+    const borderColor = darkenColor(originalBackgroundColor, 10, 10)
+
+    return {
+      id: node.id,
+      type: getVueFlowNodeType(node.type),
+      position: { x: node.x, y: node.y },
+
+      data: {
+        label: getNodeLabel(node),
+        content: node.text || node.file || '',
+        originalType: node.type,
+        width: node.width,
+        height: node.height,
+        color: node.color,
+      },
+      style: {
+        backgroundColor: backgroundColor,
+        border: `4px solid ${borderColor}`,
+        borderRadius: '8px',
+        fontSize: '14px',
+      },
+    }
+  })
 }
 
 /**
