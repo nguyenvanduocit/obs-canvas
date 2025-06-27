@@ -79,6 +79,8 @@ async function loadCanvas() {
     edges.value = canvasEdges
 
     console.log(`Loaded ${nodes.value.length} nodes and ${edges.value.length} edges from Gist`)
+
+    fitView()
   } catch (err) {
     console.error('Failed to load canvas from Gist:', err)
     error.value = err instanceof Error ? err.message : 'Failed to load canvas file from Gist'
@@ -89,13 +91,6 @@ async function loadCanvas() {
 
 onMounted(() => {
   loadCanvas()
-})
-
-onInit((instance) => {
-  // Fit view after nodes are loaded
-  setTimeout(() => {
-    fitView({ padding: 50 })
-  }, 100)
 })
 </script>
 

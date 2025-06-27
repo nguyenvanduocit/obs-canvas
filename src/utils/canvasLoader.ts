@@ -102,8 +102,7 @@ export async function loadCanvasFile(filePath: string): Promise<CanvasData> {
       // Handle Gist URL
       url = convertGistToRawUrl(filePath)
     } else {
-      // Handle local file path
-      url = `/${filePath}`
+      throw new Error('Invalid file path')
     }
 
     const response = await fetch(url)

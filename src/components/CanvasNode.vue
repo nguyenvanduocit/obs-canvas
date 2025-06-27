@@ -1,5 +1,5 @@
 <template>
-  <div class="canvas-node">
+  <div class="canvas-node" @mouseenter="onNodeEnter" @mouseleave="onNodeLeave">
     <div class="node-header" v-if="data.originalType === 'file'">
       <svg class="file-icon" viewBox="0 0 24 24" width="16" height="16">
         <path fill="currentColor"
@@ -8,7 +8,8 @@
       <span class="file-name">{{ data.label }}</span>
     </div>
 
-    <div class="node-content" :class="{ 'with-header': data.originalType === 'file' }">
+    <div ref="nodeContentRef" class="node-content" :class="{ 'with-header': data.originalType === 'file' }"
+      @wheel="handleWheel">
       <div v-if="data.originalType === 'text'" class="text-content" v-html="formattedContent"></div>
       <div v-else-if="data.originalType === 'file'" class="file-content">
         <p class="file-path">{{ data.content }}</p>
@@ -25,7 +26,7 @@
 <script setup lang="ts">
 import { Handle, Position } from '@vue-flow/core'
 import type { NodeProps } from '@vue-flow/core'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { marked } from 'marked'
 
 interface CanvasNodeData {
@@ -42,6 +43,9 @@ interface CanvasNodeData {
 interface Props extends NodeProps<CanvasNodeData> { }
 
 const props = defineProps<Props>()
+
+const nodeContentRef = ref<HTMLElement>()
+const isHovered = ref(false)
 
 /**
  * Formats text content using the marked library for complete markdown support
@@ -65,6 +69,58 @@ const formattedContent = computed(() => {
     return props.data.content.replace(/\n/g, '<br>')
   }
 })
+
+/**
+ * Handles mouse enter event on the node
+ * Sets hover state to enable scroll interception
+ */
+function onNodeEnter() {
+  isHovered.value = true
+}
+
+/**
+ * Handles mouse leave event on the node
+ * Disables hover state to restore normal canvas scroll
+ */
+function onNodeLeave() {
+  isHovered.value = false
+}
+
+/**
+ * Handles wheel events on the node content
+ * Prevents scroll propagation to canvas when content is scrollable
+ * @param event - The wheel event
+ */
+function handleWheel(event: WheelEvent) {
+  if (!nodeContentRef.value || !isHovered.value) return
+
+  const element = nodeContentRef.value
+  const { scrollTop, scrollHeight, clientHeight } = element
+
+  // Check if content is scrollable
+  const isScrollable = scrollHeight > clientHeight
+
+  if (!isScrollable) {
+    // If content is not scrollable, allow canvas scroll
+    return
+  }
+
+  // Check scroll boundaries
+  const isScrollingUp = event.deltaY < 0
+  const isScrollingDown = event.deltaY > 0
+  const isAtTop = scrollTop === 0
+  const isAtBottom = scrollTop + clientHeight >= scrollHeight - 1
+
+  // Prevent canvas scroll if we're scrolling within the node boundaries
+  // && !isAtTop
+  // !isAtBottom
+  if ((isScrollingUp) || (isScrollingDown)) {
+    event.stopPropagation()
+  }
+
+  // Allow normal scroll behavior within the node
+  // The browser will handle the actual scrolling
+}
 </script>
 
 <style scoped>
@@ -74,6 +130,13 @@ const formattedContent = computed(() => {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   width: 100%;
   height: 100%;
+  /* Add transition for smooth hover effects */
+    transition: box-shadow 0.2s ease;
+  }
+  
+  /* Visual feedback when hovering over scrollable content */
+  .canvas-node:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .node-header {
@@ -104,6 +167,34 @@ const formattedContent = computed(() => {
   overflow: auto;
   font-size: 13px;
   line-height: 1.4;
+  /* Improve scroll behavior */
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+  }
+  
+  /* Custom scrollbar for webkit browsers */
+  .node-content::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .node-content::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .node-content::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+  }
+  
+  .node-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.4);
+  }
+  
+  /* Show scrollbar on hover */
+  .canvas-node:hover .node-content::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.3);
 }
 
 .node-content.with-header {
@@ -113,7 +204,7 @@ const formattedContent = computed(() => {
 .text-content {
   color: #333;
   box-sizing: border-box;
-  cursor: grab;
+  cursor: default;
   display: block;
   font-family: Helvetica, -apple-system, "system-ui", sans-serif;
   font-size: 18px;
@@ -129,14 +220,14 @@ const formattedContent = computed(() => {
   tab-size: 4;
   text-rendering: optimizelegibility;
   unicode-bidi: plaintext;
-  user-select: none;
+  user-select: text;
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 }
 
 .text-content :deep(h1) {
   box-sizing: border-box;
   color-scheme: dark;
-  cursor: grab;
+  cursor: default;
   display: block;
   font-family: Helvetica, -apple-system, "system-ui", sans-serif;
   font-size: 30.6px;
@@ -162,7 +253,7 @@ const formattedContent = computed(() => {
   tab-size: 4;
   text-rendering: optimizelegibility;
   unicode-bidi: isolate;
-  user-select: none;
+  user-select: text;
   width: 514px;
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 }
@@ -170,7 +261,7 @@ const formattedContent = computed(() => {
 .text-content :deep(h2) {
   box-sizing: border-box;
   color-scheme: dark;
-  cursor: grab;
+  cursor: default;
   display: block;
   font-family: Helvetica, -apple-system, "system-ui", sans-serif;
   font-size: 24px;
@@ -195,14 +286,14 @@ const formattedContent = computed(() => {
   tab-size: 4;
   text-rendering: optimizelegibility;
   unicode-bidi: isolate;
-  user-select: none;
+  user-select: text;
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 }
 
 .text-content :deep(h3) {
   box-sizing: border-box;
   color-scheme: dark;
-  cursor: grab;
+  cursor: default;
   display: block;
   font-family: Helvetica, -apple-system, "system-ui", sans-serif;
   font-size: 20px;
@@ -227,14 +318,14 @@ const formattedContent = computed(() => {
   tab-size: 4;
   text-rendering: optimizelegibility;
   unicode-bidi: isolate;
-  user-select: none;
+  user-select: text;
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 }
 
 .text-content :deep(h4) {
   box-sizing: border-box;
   color-scheme: dark;
-  cursor: grab;
+  cursor: default;
   display: block;
   font-family: Helvetica, -apple-system, "system-ui", sans-serif;
   font-size: 18px;
@@ -259,7 +350,7 @@ const formattedContent = computed(() => {
   tab-size: 4;
   text-rendering: optimizelegibility;
   unicode-bidi: isolate;
-  user-select: none;
+  user-select: text;
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 }
 
