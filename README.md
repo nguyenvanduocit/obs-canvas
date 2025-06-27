@@ -1,33 +1,54 @@
-# canvasweb
+# Canvas Web Viewer
 
-This template should help get you started developing with Vue 3 in Vite.
+A web application to view and interact with Obsidian Canvas files through GitHub Gist.
 
-## Recommended IDE Setup
+🌐 **Access at:** https://canvas.aiocean.app
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## How to Use
 
-## Type Support for `.vue` Imports in TS
+### 1. Prepare Canvas File
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+- Create a Canvas file in Obsidian (file with `.canvas` extension)
+- Export the Canvas file from your Obsidian vault
 
-## Customize configuration
+### 2. Upload File to GitHub Gist
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+1. Visit [GitHub Gist](https://gist.github.com)
+2. Sign in to your GitHub account
+3. Create a new Gist:
+   - Name the file with `.canvas` extension (e.g., `my-diagram.canvas`)
+   - Copy the Canvas file content and paste it
+   - Choose "Create public gist" or "Create secret gist"
+4. After creation, you'll have a URL like: `https://gist.github.com/{username}/{gist-id}`
 
-## Project Setup
+### 3. View Canvas on Web
 
-```sh
-bun install
+Use the URL format:
+```
+https://canvas.aiocean.app/{username}/{gist-id}
 ```
 
-### Compile and Hot-Reload for Development
+**Example:**
+- Gist URL: `https://gist.github.com/nguyenvanduocit/66b2cc8bbef5f299772fb486a9b36a11`
+- Canvas Viewer URL: `https://canvas.aiocean.app/nguyenvanduocit/66b2cc8bbef5f299772fb486a9b36a11`
 
-```sh
-bun dev
-```
+### 4. Features
 
-### Type-Check, Compile and Minify for Production
+- ✅ Display nodes and connections from Canvas files
+- ✅ Zoom in/out and pan the canvas
+- ✅ Auto-fit view on load
+- ✅ Support for node types: text, file
+- ✅ Display original colors and dimensions
 
-```sh
-bun run build
-```
+## Notes
+
+- Canvas files must be uploaded to GitHub Gist (public or secret both work)
+- URL must follow the correct format: `/{username}/{gist-id}`
+- The app will automatically load and display the canvas from Gist
+
+## Support
+
+If you encounter issues, please check:
+1. Is the Gist URL in the correct format?
+2. Does the Gist exist and is it accessible?
+3. Is the Canvas file in proper JSON format?

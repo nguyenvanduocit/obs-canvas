@@ -144,7 +144,7 @@ export function convertNodesToVueFlow(canvasNodes: CanvasNode[]): Node[] {
     style: {
       width: `${node.width}px`,
       height: `${node.height}px`,
-      backgroundColor: node.color || '#ffffff',
+      backgroundColor: node.color || 'rgb(242 242 242)',
       border: '1px solid #ddd',
       borderRadius: '8px',
       fontSize: '14px',

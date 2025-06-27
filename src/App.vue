@@ -122,18 +122,18 @@ onInit((instance) => {
         </p>
         <div class="url-help">
           <p><strong>URL Format:</strong></p>
-          <code>http://localhost:8080/{username}/{gistId}</code>
+          <code>https://canvas.aiocean.app/{username}/{gistId}</code>
           <p><strong>Example:</strong></p>
-          <code>http://localhost:8080/nguyenvanduocit/66b2cc8bbef5f299772fb486a9b36a11</code>
+          <code>https://canvas.aiocean.app/nguyenvanduocit/66b2cc8bbef5f299772fb486a9b36a11</code>
         </div>
         <button @click="loadCanvas" class="retry-button">Retry</button>
       </div>
     </div>
 
     <!-- VueFlow canvas -->
-    <VueFlow v-else class="vue-flow" :nodes="nodes" :edges="edges" :node-types="nodeTypes"
-      :default-viewport="{ zoom: 0.5 }" :min-zoom="0.1" :max-zoom="2" fit-view-on-init>
-      <Background :gap="20" />
+    <VueFlow v-else class="vue-flow" :nodes="nodes" :edges="edges" :node-types="nodeTypes" :min-zoom="0.1" :max-zoom="2"
+      fit-view-on-init>
+      <Background :size="4" :gap="35" />
     </VueFlow>
   </div>
 </template>
@@ -250,27 +250,4 @@ onInit((instance) => {
   background: #2980b9;
 }
 
-/* VueFlow styling */
-:deep(.vue-flow__controls) {
-  bottom: 20px;
-  left: 20px;
-}
-
-:deep(.vue-flow__minimap) {
-  bottom: 20px;
-  right: 20px;
-  width: 200px;
-  height: 150px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-:deep(.vue-flow__edge-path) {
-  stroke-width: 2;
-}
-
-:deep(.vue-flow__edge.selected .vue-flow__edge-path) {
-  stroke: #3498db;
-  stroke-width: 3;
-}
 </style>
